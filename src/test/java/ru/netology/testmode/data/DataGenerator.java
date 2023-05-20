@@ -26,21 +26,22 @@ public class DataGenerator {
     }
 
     private static void sendRequest(RegistrationDto user) {
-        // TODO: отправить запрос на указанный в требованиях path, передав в body запроса объект user
-        //  и не забудьте передать подготовленную спецификацию requestSpec.
-        //  Пример реализации метода показан в условии к задаче.
+        given() // "дано"
+                .spec(requestSpec)                  // указываем, какую спецификацию используем
+                .body(user)                         // передаём в теле объект, который будет преобразован в JSON
+        .when()                                     // "когда"
+                .post("/api/system/users")     // на какой путь относительно BaseUri отправляем запрос
+        .then()                                     // "тогда ожидаем"
+                .statusCode(200);
+
     }
 
     public static String getRandomLogin() {
-        // TODO: добавить логику для объявления переменной login и задания её значения, для генерации
-        //  случайного логина используйте faker
-        return login;
+        return faker.name().username();
     }
 
     public static String getRandomPassword() {
-        // TODO: добавить логику для объявления переменной password и задания её значения, для генерации
-        //  случайного пароля используйте faker
-        return password;
+        return faker.internet().password();
     }
 
     public static class Registration {
@@ -48,12 +49,13 @@ public class DataGenerator {
         }
 
         public static RegistrationDto getUser(String status) {
-            // TODO: создать пользователя user используя методы getRandomLogin(), getRandomPassword() и параметр status
+            RegistrationDto user = new RegistrationDto(getRandomLogin(), getRandomPassword(), status);
             return user;
         }
 
         public static RegistrationDto getRegisteredUser(String status) {
-            // TODO: объявить переменную registeredUser и присвоить ей значение возвращённое getUser(status).
+            RegistrationDto registeredUser = getUser(status);
+            sendRequest(registeredUser);
             // Послать запрос на регистрацию пользователя с помощью вызова sendRequest(registeredUser)
             return registeredUser;
         }
